@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from "react-hook-form"
+import axios from 'axios'
 // import Login from './Login'
 
 const Signup = () => {
@@ -11,7 +12,29 @@ const Signup = () => {
         formState: { errors },
     } = useForm()
 
-    const onSubmit = (data) => console.log(data)
+    const onSubmit = async (data) => {
+        const userInfo = {
+            fullName: data.fullName,
+            email: data.email,
+            password: data.password
+        }
+        // console.log(data)
+        await axios.post("http://localhost:4001/user/signup", userInfo)
+            .then((res) => {
+                console.log(res.data)
+                if (res.data) {
+                    toast.success('Successfully Registered!');
+                }
+                localStorage.setItem("Users", JSON.stringify(res.data.user))
+
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log(err)
+                    toast.error("error: " + err.response.data.message);
+                }
+            })
+    }
 
     return (
         <>
@@ -29,8 +52,8 @@ const Signup = () => {
                                     <div className='mt-4 space-y-2'>
                                         <span>Name </span>
                                         <br />
-                                        <input type="text" className='w-80 border rounded-md px-1 py-1' placeholder='Enter your Name ' {...register("name", { required: true })} />
-                                        {errors.name && <span>This field is required</span>}
+                                        <input type="text" className='w-80 border rounded-md px-1 py-1' placeholder='Enter your Name ' {...register("fullName", { required: true })} />
+                                        {errors.fullName && <span>This field is required</span>}
 
                                     </div>
                                     {/* Email  */}
